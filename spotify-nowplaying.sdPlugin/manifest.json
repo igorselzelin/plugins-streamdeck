@@ -1,0 +1,44 @@
+{
+  "Actions": [
+    {
+      "Icon": "static/CH.png",
+      "Name": "Now Playing",
+      "States": [
+        {
+          "FontSize": "10",
+          "TitleAlignment": "bottom",
+          "Image": "static/spotify.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information",
+        "Knob"
+      ],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "Tooltip": "Shows current Spotify track with play/pause control",
+      "UUID": "com.hotspot.streamdock.demo.action1",
+      "PropertyInspectorPath": "propertyInspector/action1/index.html"
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Igor",
+  "Name": "Spotify Now Playing",
+  "Icon": "static/CH.png",
+  "CodePath": "plugin/app.exe",
+  "Description": "Shows the current Spotify track on the button with play/pause control",
+  "Category": "Spotify",
+  "CategoryIcon": "static/CH.png",
+  "Version": "1.0.0",
+  "URL": "",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "7"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.9"
+  }
+}
