@@ -5,7 +5,7 @@ const { Plugins, Actions, log } = require('./utils/plugin');
 const { SpotifyPoller } = require('./spotify');
 const { renderTrackCard, preRenderFrames } = require('./renderTrackCard');
 
-// Credenciais ficam em config.js (fora do git — veja config.example.js e .gitignore)
+// Credentials live in config.js (outside git — see config.example.js and .gitignore)
 const {
     SPOTIFY_CLIENT_ID,
     SPOTIFY_CLIENT_SECRET,
@@ -15,7 +15,7 @@ const {
 
 const SPOTIFY_LOGO = path.join(process.cwd(), '../static/spotify.png');
 
-const CREDENTIALS_OK = !SPOTIFY_CLIENT_ID.startsWith('SEU_');
+const CREDENTIALS_OK = !SPOTIFY_CLIENT_ID.startsWith('YOUR_');
 const SIZE = 126;
 
 const plugin = new Plugins();
@@ -128,11 +128,11 @@ async function onStateChange(track) {
 
             if (!token.cancelled) {
                 preRenderFrames(track.imageBase64)
-                    .then(cache => { frameCache = cache; log.info('Frames prontos'); })
-                    .catch(err => log.error('preRenderFrames erro:', err.message));
+                    .then(cache => { frameCache = cache; log.info('Frames ready'); })
+                    .catch(err => log.error('preRenderFrames error:', err.message));
             }
         } else {
-            // Spotify fechado ou sem faixa — exibe logo
+            // Spotify closed or no track — show logo
             showSpotifyLogo();
         }
     } else {
@@ -164,7 +164,7 @@ plugin.action1 = new Actions({
                 SPOTIFY_CLIENT_SECRET,
                 SPOTIFY_REFRESH_TOKEN,
                 onStateChange,
-                (err) => log.error('Spotify erro:', err),
+                (err) => log.error('Spotify error:', err),
                 log
             );
             poller.start(3000);
@@ -184,7 +184,7 @@ plugin.action1 = new Actions({
     async keyUp({ context }) {
         if (!poller) return;
 
-        // Spotify fechado: abre o app
+        // Spotify closed: open the app
         if (!currentTrack) {
             spawn(SPOTIFY_EXE, [], { detached: true, stdio: 'ignore' }).unref();
             tryActivateSpotify();
@@ -214,7 +214,7 @@ plugin.action1 = new Actions({
         }
 
         try { await apiPromise; }
-        catch (err) { log.error('keyUp API erro:', err.message); }
+        catch (err) { log.error('keyUp API error:', err.message); }
     },
 
     dialRotate(data) { log.info('dialRotate', data); },

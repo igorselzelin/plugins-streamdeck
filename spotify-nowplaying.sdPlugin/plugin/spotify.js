@@ -35,7 +35,7 @@ async function refreshAccessToken(clientId, clientSecret, refreshToken) {
         'Authorization': `Basic ${creds}`,
         'Content-Length': Buffer.byteLength(body)
     });
-    // POST com urlencoded precisa de tratamento especial
+    // POST with urlencoded needs special handling
     return new Promise((resolve, reject) => {
         const parsed = new URL('https://accounts.spotify.com/api/token');
         const req = https.request({
@@ -52,7 +52,7 @@ async function refreshAccessToken(clientId, clientSecret, refreshToken) {
             r.on('data', c => d += c);
             r.on('end', () => {
                 const json = JSON.parse(d);
-                if (!json.access_token) reject(new Error('Token inválido: ' + d));
+                if (!json.access_token) reject(new Error('Invalid token: ' + d));
                 else resolve(json.access_token);
             });
         });
@@ -72,7 +72,7 @@ async function getCurrentTrack(accessToken) {
 
 async function downloadImageAsBase64(imageUrl) {
     const res = await httpsRequest('GET', imageUrl, null);
-    if (res.status !== 200) throw new Error('Falha download imagem: ' + res.status);
+    if (res.status !== 200) throw new Error('Image download failed: ' + res.status);
     return res.body.toString('base64');
 }
 
@@ -96,7 +96,7 @@ class SpotifyPoller {
         if (Date.now() >= this.tokenExpiry - 30000) {
             this.accessToken = await refreshAccessToken(this.clientId, this.clientSecret, this.refreshToken);
             this.tokenExpiry = Date.now() + 3500 * 1000;
-            this.log.info('Spotify token renovado');
+            this.log.info('Spotify token refreshed');
         }
     }
 
@@ -119,13 +119,13 @@ class SpotifyPoller {
             const trackId = track.id;
             const isPlaying = data.is_playing;
 
-            // Baixa imagem só quando a faixa muda
+            // Download image only when the track changes
             if (trackId !== this.lastTrackId) {
                 const imageUrl = track.album.images[0]?.url;
                 this.lastImageBase64 = imageUrl ? await downloadImageAsBase64(imageUrl) : null;
             }
 
-            // Dispara callback se faixa ou estado play/pause mudou
+            // Fire callback if the track or play/pause state changed
             if (trackId !== this.lastTrackId || isPlaying !== this.lastIsPlaying) {
                 this.lastTrackId = trackId;
                 this.lastIsPlaying = isPlaying;
@@ -139,7 +139,7 @@ class SpotifyPoller {
                 });
             }
         } catch (err) {
-            this.log.error('SpotifyPoller erro:', err.message);
+            this.log.error('SpotifyPoller error:', err.message);
             if (this.onError) this.onError(err);
         }
     }
@@ -149,7 +149,7 @@ class SpotifyPoller {
         const res = await httpsRequest('PUT', 'https://api.spotify.com/v1/me/player/pause', null, {
             'Authorization': `Bearer ${this.accessToken}`
         });
-        if (res.status !== 204) throw new Error('Pause falhou: ' + res.status);
+        if (res.status !== 204) throw new Error('Pause failed: ' + res.status);
     }
 
     async resumePlayback() {
@@ -157,7 +157,7 @@ class SpotifyPoller {
         const res = await httpsRequest('PUT', 'https://api.spotify.com/v1/me/player/play', null, {
             'Authorization': `Bearer ${this.accessToken}`
         });
-        if (res.status !== 204) throw new Error('Resume falhou: ' + res.status);
+        if (res.status !== 204) throw new Error('Resume failed: ' + res.status);
     }
 
     start(intervalMs = 3000) {

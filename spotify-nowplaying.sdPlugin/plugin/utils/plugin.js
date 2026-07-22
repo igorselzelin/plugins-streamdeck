@@ -1,4 +1,4 @@
-// 配置日志文件
+// Configure the log file
 const now = new Date();
 const log = require('log4js').configure({
     appenders: {
@@ -9,7 +9,7 @@ const log = require('log4js').configure({
     }
 }).getLogger();
 
-// 主线程错误处理
+// Main thread error handling
 process.on('uncaughtException', (error) => {
     log.error('Uncaught Exception:', error);
 });
@@ -17,7 +17,7 @@ process.on('unhandledRejection', (reason) => {
     log.error('Unhandled Rejection:', reason);
 });
 
-// 插件类
+// Plugin class
 const ws = require('ws');
 class Plugins {
     static language = process.argv[5];
@@ -36,7 +36,7 @@ class Plugins {
         });
         Plugins.instance = this;
     }
-    // 设置标题
+    // Set the title
     setTitle(context, str, rowOrParams = 0, num = 6) {
         let row = 0;
         let titleParameters = null;
@@ -58,7 +58,7 @@ class Plugins {
         if (titleParameters) payload.titleParameters = titleParameters;
         this.ws.send(JSON.stringify({ event: "setTitle", context, payload }));
     }
-    // 设置背景
+    // Set the image
     setImage(context, imagePath) {
         const fs = require('fs');
         const path = require('path');
@@ -79,21 +79,21 @@ class Plugins {
             }
         }));
     }
-    // 设置状态
+    // Set the state
     setState(context, state) {
         this.ws.send(JSON.stringify({
             event: "setState",
             context, payload: { state }
         }));
     }
-    // 保存持久化数据
+    // Persist settings data
     setSettings(context, payload) {
         this.ws.send(JSON.stringify({
             event: "setSettings",
             context, payload
         }));
     }
-    // 发送给属性检测器
+    // Send to the property inspector
     sendToPropertyInspector(payload) {
         this.ws.send(JSON.stringify({
             action: Actions.currentAction,
@@ -101,7 +101,7 @@ class Plugins {
             payload, event: "sendToPropertyInspector"
         }));
     }
-    // 用默认浏览器打开网页
+    // Open a URL in the default browser
     openUrl(url) {
         this.ws.send(JSON.stringify({
             event: "openUrl",
@@ -110,14 +110,14 @@ class Plugins {
     }
 };
 
-// 操作类
+// Actions class
 class Actions {
     constructor(data) {
         this.data = {};
         this.default = {};
         Object.assign(this, data);
     }
-    // 属性检查器显示时
+    // When the property inspector appears
     static currentAction = null;
     static currentContext = null;
     propertyInspectorDidAppear(data) {
@@ -125,13 +125,13 @@ class Actions {
         Actions.currentContext = data.context;
         this._propertyInspectorDidAppear?.(data);
     }
-    // 初始化数据
+    // Initialize data
     willAppear(data) {
         const { context, payload: { settings } } = data;
         this.data[context] = Object.assign({ ...this.default }, settings);
         this._willAppear?.(data);
     }
-    // 行动销毁
+    // Action teardown
     willDisappear(data) {
         this._willDisappear?.(data);
         delete this.data[data.context];

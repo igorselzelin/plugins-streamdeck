@@ -1,9 +1,9 @@
 /// <reference path="../utils/common.js" />
 /// <reference path="../utils/action.js" />
 
-// $local 是否国际化
-// $back 是否自行决定回显时机
-// $dom 获取文档元素 - 不是动态的都写在这里面
+// $local whether to localize
+// $back whether the caller decides when to show the panel
+// $dom document element references - put anything non-dynamic here
 const $local = false, $back = false, $dom = {
     main: $('.sdpi-wrapper')
 };

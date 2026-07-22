@@ -1,6 +1,6 @@
 /**
- * Script de autorização Spotify — rode UMA VEZ para obter o refresh_token.
- * Uso: node spotify_auth.js <CLIENT_ID> <CLIENT_SECRET>
+ * Spotify authorization script — run ONCE to obtain the refresh_token.
+ * Usage: node spotify_auth.js <CLIENT_ID> <CLIENT_SECRET>
  */
 
 const http = require('http');
@@ -15,7 +15,7 @@ const SCOPES = 'user-read-currently-playing user-read-playback-state user-modify
 const PORT = 8888;
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
-    console.error('Uso: node spotify_auth.js <CLIENT_ID> <CLIENT_SECRET>');
+    console.error('Usage: node spotify_auth.js <CLIENT_ID> <CLIENT_SECRET>');
     process.exit(1);
 }
 
@@ -31,7 +31,7 @@ const server = http.createServer((req, res) => {
 
     const code = parsed.query.code;
     if (!code) {
-        res.end('Erro: nenhum code recebido.');
+        res.end('Error: no code received.');
         return;
     }
 
@@ -60,19 +60,19 @@ const server = http.createServer((req, res) => {
         tokenRes.on('end', () => {
             const json = JSON.parse(data);
             if (json.refresh_token) {
-                res.end('<h1>Sucesso! Feche esta janela.</h1>');
+                res.end('<h1>Success! You can close this window.</h1>');
                 console.log('\n========================================');
-                console.log('REFRESH TOKEN OBTIDO COM SUCESSO!');
+                console.log('REFRESH TOKEN OBTAINED SUCCESSFULLY!');
                 console.log('========================================');
-                console.log('Guarde esses valores no plugin:\n');
+                console.log('Save these values in the plugin:\n');
                 console.log(`CLIENT_ID:     ${CLIENT_ID}`);
                 console.log(`CLIENT_SECRET: ${CLIENT_SECRET}`);
                 console.log(`REFRESH_TOKEN: ${json.refresh_token}`);
                 console.log('========================================\n');
                 server.close();
             } else {
-                res.end('<h1>Erro ao obter token. Veja o console.</h1>');
-                console.error('Erro:', json);
+                res.end('<h1>Error getting token. Check the console.</h1>');
+                console.error('Error:', json);
                 server.close();
             }
         });
@@ -82,7 +82,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-    console.log('Abrindo navegador para autorização...\n');
+    console.log(`Server running at http://localhost:${PORT}`);
+    console.log('Opening browser for authorization...\n');
     exec(`start "" "${authUrl}"`);
 });

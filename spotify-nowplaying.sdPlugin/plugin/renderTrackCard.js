@@ -1,25 +1,25 @@
 const Jimp = require('jimp');
 
-const SIZE = 126;         // tamanho real do display
+const SIZE = 126;         // actual display size
 const PAUSED_SCALE = 0.90;
-const ANIM_FRAMES = 7;    // frames da transição
+const ANIM_FRAMES = 7;    // transition frames
 
 async function renderBlendFrame(colorImg, bwImg, t) {
-    // t: 0 = 100% colorido tamanho cheio  |  1 = 90% preto e branco
+    // t: 0 = 100% color, full size  |  1 = 90% black and white
     const scale = 1 - (1 - PAUSED_SCALE) * t;
     const scaledSize = Math.floor(SIZE * scale);
     const offset = Math.floor((SIZE - scaledSize) / 2);
 
     const frame = colorImg.clone();
 
-    // Blend: colorido → preto e branco conforme t
+    // Blend: color → black and white as t increases
     frame.composite(bwImg.clone(), 0, 0, {
         mode: Jimp.BLEND_SOURCE_OVER,
         opacitySource: t,
         opacityDest: 1
     });
 
-    // Zoom out conforme t
+    // Zoom out as t increases
     frame.resize(scaledSize, scaledSize);
     const canvas = new Jimp(SIZE, SIZE, 0x000000ff);
     canvas.composite(frame, offset, offset);
@@ -27,8 +27,8 @@ async function renderBlendFrame(colorImg, bwImg, t) {
     return (await canvas.getBase64Async(Jimp.MIME_JPEG)).replace('data:image/jpeg;base64,', '');
 }
 
-// Pré-renderiza todos os frames ao carregar uma faixa.
-// Retorna: { playing, paused, toPause[], toPlay[] }
+// Pre-renders all frames when a track loads.
+// Returns: { playing, paused, toPause[], toPlay[] }
 async function preRenderFrames(albumBase64) {
     const colorImg = (await Jimp.read(Buffer.from(albumBase64, 'base64'))).resize(SIZE, SIZE);
     const bwImg = colorImg.clone().greyscale();
@@ -37,16 +37,16 @@ async function preRenderFrames(albumBase64) {
     for (let i = 0; i <= ANIM_FRAMES; i++) {
         all.push(await renderBlendFrame(colorImg, bwImg, i / ANIM_FRAMES));
     }
-    // all[0] = tocando, all[FRAMES] = pausado
+    // all[0] = playing, all[FRAMES] = paused
     return {
         playing: all[0],
         paused:  all[ANIM_FRAMES],
-        toPause: all.slice(1),              // do estado atual até pausado
-        toPlay:  all.slice(0, -1).reverse() // do estado atual até tocando
+        toPause: all.slice(1),              // from current state to paused
+        toPlay:  all.slice(0, -1).reverse() // from current state to playing
     };
 }
 
-// Render estático simples (fallback antes dos frames ficarem prontos)
+// Simple static render (fallback before frames are ready)
 async function renderTrackCard(albumBase64, paused = false) {
     const img = (await Jimp.read(Buffer.from(albumBase64, 'base64'))).resize(SIZE, SIZE);
 
