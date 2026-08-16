@@ -1,0 +1,42 @@
+{
+  "Actions": [
+    {
+      "Icon": "static/seek.png",
+      "Name": "Seek Spotify (±5s)",
+      "States": [
+        {
+          "FontSize": "10",
+          "TitleAlignment": "bottom",
+          "Image": "static/seek.png"
+        }
+      ],
+      "Controllers": [
+        "Knob"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false,
+      "Tooltip": "Rotate to seek ±5 seconds in the current track",
+      "UUID": "com.hotspot.streamdock.spotifyseek.action1",
+      "PropertyInspectorPath": "propertyInspector/action1/index.html"
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Igor",
+  "Name": "Spotify Seek",
+  "Icon": "static/CH.png",
+  "CodePath": "plugin/app.exe",
+  "Description": "Knob control to seek ±5 seconds in the current Spotify track",
+  "Category": "Spotify",
+  "CategoryIcon": "static/CH.png",
+  "Version": "1.0.0",
+  "URL": "",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "7"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.9"
+  }
+}

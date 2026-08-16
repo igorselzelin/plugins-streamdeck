@@ -1,0 +1,42 @@
+{
+  "Actions": [
+    {
+      "Icon": "static/vol.png",
+      "Name": "Volume / Mute Spotify",
+      "States": [
+        {
+          "FontSize": "10",
+          "TitleAlignment": "bottom",
+          "Image": "static/vol.png"
+        }
+      ],
+      "Controllers": [
+        "Knob"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false,
+      "Tooltip": "Rotate to change Spotify volume, press to mute",
+      "UUID": "com.hotspot.streamdock.spotifyvolume.action1",
+      "PropertyInspectorPath": "propertyInspector/action1/index.html"
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Igor",
+  "Name": "Spotify Volume",
+  "Icon": "static/CH.png",
+  "CodePath": "plugin/app.exe",
+  "Description": "Knob control for Spotify volume and mute",
+  "Category": "Spotify",
+  "CategoryIcon": "static/CH.png",
+  "Version": "1.0.0",
+  "URL": "",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "7"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.9"
+  }
+}

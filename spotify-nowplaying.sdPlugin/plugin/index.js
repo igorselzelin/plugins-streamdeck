@@ -20,11 +20,36 @@ const SIZE = 126;
 
 const plugin = new Plugins();
 let poller = null;
+let pollerRefCount = 0;
 let currentTrack = null;   // { name, artist, imageBase64, isPlaying }
 let frameCache = null;     // { playing, paused, toPause[], toPlay[] }
 let currentDisplayB64 = null;
 const activeContexts = new Set();
 let animToken = { cancelled: false };
+
+function ensurePoller() {
+    pollerRefCount++;
+    if (!poller) {
+        poller = new SpotifyPoller(
+            SPOTIFY_CLIENT_ID,
+            SPOTIFY_CLIENT_SECRET,
+            SPOTIFY_REFRESH_TOKEN,
+            onStateChange,
+            (err) => log.error('Spotify error:', err),
+            log
+        );
+        poller.start(3000);
+    }
+    return poller;
+}
+
+function releasePoller() {
+    pollerRefCount = Math.max(0, pollerRefCount - 1);
+    if (pollerRefCount === 0 && poller) {
+        poller.stop();
+        poller = null;
+    }
+}
 
 function cancelAnim() {
     animToken.cancelled = true;
@@ -158,25 +183,12 @@ plugin.action1 = new Actions({
             plugin.setImage(context, SPOTIFY_LOGO);
         }
 
-        if (!poller) {
-            poller = new SpotifyPoller(
-                SPOTIFY_CLIENT_ID,
-                SPOTIFY_CLIENT_SECRET,
-                SPOTIFY_REFRESH_TOKEN,
-                onStateChange,
-                (err) => log.error('Spotify error:', err),
-                log
-            );
-            poller.start(3000);
-        }
+        ensurePoller();
     },
 
     _willDisappear({ context }) {
         activeContexts.delete(context);
-        if (activeContexts.size === 0 && poller) {
-            poller.stop();
-            poller = null;
-        }
+        releasePoller();
     },
 
     _propertyInspectorDidAppear(data) { },
