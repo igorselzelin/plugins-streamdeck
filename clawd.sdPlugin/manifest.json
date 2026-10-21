@@ -1,0 +1,41 @@
+{
+  "Actions": [
+    {
+      "Icon": "static/CH.png",
+      "Name": "Clawd",
+      "States": [
+        {
+          "Image": "static/CH.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false,
+      "Tooltip": "Clawd, the Claude Code mascot — click to say hi",
+      "UUID": "com.hotspot.streamdock.clawd.action1",
+      "PropertyInspectorPath": "propertyInspector/action1/index.html"
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Igor",
+  "Name": "Clawd",
+  "Icon": "static/CH.png",
+  "CodePath": "plugin/app.exe",
+  "Description": "An animated pixel mascot that reacts to what Claude Code is doing",
+  "Category": "Claude Code",
+  "CategoryIcon": "static/CH.png",
+  "Version": "1.0.0",
+  "URL": "",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "7"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.9"
+  }
+}

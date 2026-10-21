@@ -1,0 +1,63 @@
+{
+  "Actions": [
+    {
+      "Icon": "static/CH.png",
+      "Name": "Claude Session (5h)",
+      "States": [
+        {
+          "FontSize": "13",
+          "TitleAlignment": "middle",
+          "Image": "static/CH.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false,
+      "Tooltip": "Claude Pro/Max rolling 5-hour session limit — click to show time until reset",
+      "UUID": "com.hotspot.streamdock.claudeusage.action2",
+      "PropertyInspectorPath": "propertyInspector/action1/index.html"
+    },
+    {
+      "Icon": "static/CH.png",
+      "Name": "Claude Weekly",
+      "States": [
+        {
+          "FontSize": "13",
+          "TitleAlignment": "middle",
+          "Image": "static/CH.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false,
+      "Tooltip": "Claude Pro/Max weekly limit — click to show time until reset",
+      "UUID": "com.hotspot.streamdock.claudeusage.action3",
+      "PropertyInspectorPath": "propertyInspector/action1/index.html"
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Igor",
+  "Name": "Claude Usage",
+  "Icon": "static/CH.png",
+  "CodePath": "plugin/app.exe",
+  "Description": "Shows your Claude Pro/Max 5-hour session and weekly usage limits on the button",
+  "Category": "Claude Code",
+  "CategoryIcon": "static/CH.png",
+  "Version": "1.0.0",
+  "URL": "",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "7"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.9"
+  }
+}

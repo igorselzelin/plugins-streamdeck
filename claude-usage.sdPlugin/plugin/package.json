@@ -1,0 +1,20 @@
+{
+  "name": "nodeplugin",
+  "version": "1.0.0",
+  "author": "Igor",
+  "main": "index.js",
+  "description": "Live Claude Code usage monitor for StreamDock",
+  "scripts": {
+    "build": "ncc build index.js -m -o ./build && node autofile.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jimp": "^0.21.3",
+    "log4js": "^6.9.1",
+    "parse-bmfont-xml": "^1.1.4",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "fs-extra": "^8.1.0"
+  }
+}
