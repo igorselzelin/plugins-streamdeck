@@ -21,9 +21,10 @@ const BACKGROUND = {
 
 // --- Pro/Max plan limits (session 5h + weekly) ---
 // Both read from the same shared planUsage poll (one `claude -p "/usage"`
-// call feeds both), refreshed every 60s since these quotas move slowly.
+// call feeds both), refreshed via the usage API on every Claude Code activity (fs watch) plus a 30s safety-net poll.
 (function setupPlanUsageActions() {
     let pollTimer = null;
+    let stopWatching = null;
     let watchers = 0;
     const renderCallbacks = new Set();
 
@@ -37,6 +38,7 @@ const BACKGROUND = {
         if (pollTimer) return;
         refreshAndRenderAll();
         pollTimer = setInterval(refreshAndRenderAll, planUsage.REFRESH_MS);
+        stopWatching = planUsage.watchActivity(log, () => { for (const cb of renderCallbacks) cb(); });
     }
 
     function stopPolling() {
@@ -44,6 +46,7 @@ const BACKGROUND = {
         if (watchers === 0 && pollTimer) {
             clearInterval(pollTimer);
             pollTimer = null;
+            if (stopWatching) { stopWatching(); stopWatching = null; }
         }
     }
 

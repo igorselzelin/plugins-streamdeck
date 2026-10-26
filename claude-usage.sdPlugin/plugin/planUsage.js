@@ -15,8 +15,15 @@ const os = require('os');
 // IMPORTANT: do NOT add --bare here — it forces API-key-only auth and skips
 // OAuth/keychain, which breaks subscription-based /usage lookups entirely.
 
-const REFRESH_MS = 60_000;
+// Safety-net poll. Real-time updates come from watchActivity() below, which
+// triggers a refresh as soon as any Claude Code session writes to disk.
+const REFRESH_MS = 30_000;
 const TIMEOUT_MS = 15_000;
+const MIN_FETCH_GAP_MS = 4_000; // never hit the API more often than this
+const ACTIVITY_DEBOUNCE_MS = 1_500;
+const API_URL = 'https://api.anthropic.com/api/oauth/usage';
+const CREDENTIALS_FILE = path.join(os.homedir(), '.claude', '.credentials.json');
+const PROJECTS_DIR = path.join(os.homedir(), '.claude', 'projects');
 
 // `claude -p "/usage"` shares its local session/config state with any other
 // claude process running under this same Windows account — including one
@@ -154,9 +161,41 @@ function runUsageCommand() {
     });
 }
 
+// Same endpoint Claude Code itself uses for /usage: ~300ms, no process spawn,
+// no contention with other running sessions. The access token is read fresh
+// on each call because Claude Code rotates it; if it has expired (401) we fall
+// back to the CLI below, which refreshes it as a side effect.
+async function fetchUsageFromApi() {
+    const creds = JSON.parse(fs.readFileSync(CREDENTIALS_FILE, 'utf8')).claudeAiOauth;
+    const res = await fetch(API_URL, {
+        headers: {
+            Authorization: `Bearer ${creds.accessToken}`,
+            'anthropic-beta': 'oauth-2025-04-20',
+            'User-Agent': 'claude-code/2.0.0'
+        },
+        signal: AbortSignal.timeout(TIMEOUT_MS)
+    });
+    if (!res.ok) throw new Error(`usage API HTTP ${res.status}`);
+    const j = await res.json();
+    if (!j.five_hour || !j.seven_day) throw new Error('usage API: unexpected shape');
+    const entry = (e) => ({ pct: e.utilization / 100, resetsAt: e.resets_at ? new Date(e.resets_at) : null });
+    return { session: entry(j.five_hour), weekly: entry(j.seven_day) };
+}
+
+let lastFetchAt = 0;
+
 async function refresh(log) {
     if (inflight) return inflight;
     inflight = (async () => {
+        lastFetchAt = Date.now();
+        try {
+            cache = { ...(await fetchUsageFromApi()), fetchedAt: Date.now() };
+            saveCacheToDisk(cache);
+            inflight = null;
+            return;
+        } catch (err) {
+            if (log) log.warn(`planUsage: API fetch failed (${err.message}), falling back to CLI`);
+        }
         let lastFailure = null;
         for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
             try {
@@ -184,6 +223,31 @@ function getSnapshot() {
     return cache;
 }
 
+// Real-time trigger: any Claude Code session (VS Code, CLI, WSL) appends to a
+// transcript under ~/.claude/projects on every message, so a recursive watch
+// there is a cheap "usage just changed" signal. Debounced and rate-limited by
+// MIN_FETCH_GAP_MS; onUpdate runs after each triggered refresh.
+function watchActivity(log, onUpdate) {
+    let timer = null;
+    const trigger = () => {
+        if (timer) return;
+        const wait = Math.max(ACTIVITY_DEBOUNCE_MS, MIN_FETCH_GAP_MS - (Date.now() - lastFetchAt));
+        timer = setTimeout(async () => {
+            timer = null;
+            await refresh(log);
+            onUpdate();
+        }, wait);
+    };
+    try {
+        const watcher = fs.watch(PROJECTS_DIR, { recursive: true }, trigger);
+        watcher.on('error', err => log && log.warn(`planUsage: watcher error: ${err.message}`));
+        return () => { watcher.close(); clearTimeout(timer); };
+    } catch (err) {
+        if (log) log.warn(`planUsage: cannot watch ${PROJECTS_DIR} (${err.message}); relying on polling`);
+        return () => {};
+    }
+}
+
 function formatCountdown(date) {
     if (!date) return '--';
     const ms = date.getTime() - Date.now();
@@ -199,4 +263,4 @@ function formatCountdown(date) {
     return `${minutes}m`;
 }
 
-module.exports = { refresh, getSnapshot, formatCountdown, REFRESH_MS };
+module.exports = { refresh, getSnapshot, formatCountdown, watchActivity, REFRESH_MS };

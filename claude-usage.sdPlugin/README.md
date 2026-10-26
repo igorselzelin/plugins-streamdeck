@@ -6,11 +6,9 @@
 
 ## Português
 
-Duas actions do tipo **Keypad** mostrando os medidores reais do plano Pro/Max — os mesmos que aparecem em Configurações → Uso no app do Claude: **Claude Session (5h)** (janela rolante de 5 horas) e **Claude Weekly** (limite semanal). Cada botão mostra um anel de progresso colorido (verde/amarelo/vermelho) e o título alterna, ao clicar, entre **% usado** e **tempo até resetar** (ex: `4h 12m`, `3d 22h`).
+Duas actions do tipo **Keypad** mostrando os medidores reais do plano Pro/Max — os mesmos que aparecem em Configurações → Uso no app do Claude: **Claude Session (5h)** (janela rolante de 5 horas) e **Claude Weekly** (limite semanal). Cada botão mostra um anel de progresso colorido (verde/amarelo/vermelho) e o título alterna, ao clicar, entre **% usado** e **tempo até resetar** (apenas a maior unidade, ex: `4h`, `3d`, `45m`).
 
-Esse dado não existe em nenhum arquivo local nem API documentada — é obtido rodando `claude -p "/usage" --output-format json --no-session-persistence` (o mesmo comando `/usage` que você digitaria na REPL do Claude Code, só que sem interação). É uma chamada gratuita e local (não conta como uma requisição de verdade ao modelo, não afeta a própria cota que está sendo medida) e `--no-session-persistence` evita deixar um transcript órfão em `~/.claude/projects/`. **Importante:** não usar `--bare` nesse comando — ele força autenticação só por API key e quebra a leitura via assinatura OAuth.
-
-Faz polling a cada 60 segundos (essas cotas mudam devagar, não precisa ser mais rápido — e cada chamada já tem ~1-2s de overhead de subir o processo do CLI). O horário de reset vem no formato "Aug 20, 3:10am (America/Sao_Paulo)" e é interpretado como horário local desta máquina (sem conversão real de timezone — assume que a máquina roda no mesmo fuso do texto).
+Os dados vêm do endpoint OAuth de uso (`/api/oauth/usage`) que o próprio Claude Code usa, autenticado com o token de `~/.claude/.credentials.json` — responde em ~300 ms, sem subir processo. A atualização é **em tempo real**: o plugin observa `~/.claude/projects` e busca o uso novamente ~1,5 s depois de qualquer atividade em qualquer sessão do Claude Code (VS Code, CLI, WSL), além de um poll de segurança a cada 30 s. Se o token expirar ou a API falhar, cai automaticamente para `claude -p "/usage" --output-format json --no-session-persistence` (**não** usar `--bare`: quebra a autenticação por assinatura).
 
 ### Build e instalação
 
@@ -26,11 +24,9 @@ Feche o Rise Mode Controller / StreamDock completamente antes de executar o buil
 
 ## English
 
-Two **Keypad** actions showing the real Pro/Max plan meters — the same ones shown in Settings → Usage in the Claude app: **Claude Session (5h)** (rolling 5-hour window) and **Claude Weekly** (weekly limit). Each button shows a colored progress ring (green/yellow/red), and the title toggles on click between **% used** and **time until reset** (e.g. `4h 12m`, `3d 22h`).
+Two **Keypad** actions showing the real Pro/Max plan meters — the same ones shown in Settings → Usage in the Claude app: **Claude Session (5h)** (rolling 5-hour window) and **Claude Weekly** (weekly limit). Each button shows a colored progress ring (green/yellow/red), and the title toggles on click between **% used** and **time until reset** (largest unit only, e.g. `4h`, `3d`, `45m`).
 
-This data doesn't exist in any local file or documented API — it's obtained by running `claude -p "/usage" --output-format json --no-session-persistence` (the same `/usage` command you'd type in the Claude Code REPL, just without interaction). It's a free, local call (doesn't count as a real request to the model, doesn't affect the very quota it's reporting), and `--no-session-persistence` avoids leaving an orphan transcript file in `~/.claude/projects/`. **Important:** do not add `--bare` to that command — it forces API-key-only auth and breaks OAuth/subscription-based lookups.
-
-Polls every 60 seconds (these quotas move slowly, no need to go faster — and each call already has ~1-2s of CLI process startup overhead). The reset time comes formatted like "Aug 20, 3:10am (America/Sao_Paulo)" and is interpreted as local wall-clock time on this machine (no real timezone conversion — assumes the machine runs in the same zone as the printed label).
+Data comes from the OAuth usage endpoint (`/api/oauth/usage`) that Claude Code itself uses, authenticated with the token in `~/.claude/.credentials.json` — ~300 ms, no process spawn. Updates are **real-time**: the plugin watches `~/.claude/projects` and re-fetches usage ~1.5 s after any activity in any Claude Code session (VS Code, CLI, WSL), plus a 30 s safety-net poll. If the token has expired or the API fails, it automatically falls back to `claude -p "/usage" --output-format json --no-session-persistence` (do **not** add `--bare`: it breaks subscription auth).
 
 ### Build and install
 

@@ -1,0 +1,103 @@
+{
+  "Actions": [
+    {
+      "Icon": "static/mute.png",
+      "Name": "Mute",
+      "States": [
+        {
+          "FontSize": "13",
+          "TitleAlignment": "middle",
+          "Image": "static/mute.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Toggles Discord mute (Ctrl+Shift+M)",
+      "UUID": "com.hotspot.streamdock.discordmute.action1",
+      "PropertyInspectorPath": "propertyInspector/mute/index.html"
+    },
+    {
+      "Icon": "static/deafen.png",
+      "Name": "Deafen",
+      "States": [
+        {
+          "FontSize": "13",
+          "TitleAlignment": "middle",
+          "Image": "static/deafen.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Toggles Discord deafen (Ctrl+Shift+D)",
+      "UUID": "com.hotspot.streamdock.discorddeafen.action1",
+      "PropertyInspectorPath": "propertyInspector/deafen/index.html"
+    },
+    {
+      "Icon": "static/camera.png",
+      "Name": "Camera",
+      "States": [
+        {
+          "FontSize": "13",
+          "TitleAlignment": "middle",
+          "Image": "static/camera.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Toggles Discord camera (Ctrl+Shift+V, then Enter)",
+      "UUID": "com.hotspot.streamdock.discordkeyv.action1",
+      "PropertyInspectorPath": "propertyInspector/camera/index.html"
+    },
+    {
+      "Icon": "static/hangup.png",
+      "Name": "Hang Up",
+      "States": [
+        {
+          "FontSize": "13",
+          "TitleAlignment": "middle",
+          "Image": "static/hangup.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Leaves the Discord voice call (Ctrl+Shift+E)",
+      "UUID": "com.hotspot.streamdock.discordkeye.action1",
+      "PropertyInspectorPath": "propertyInspector/hangup/index.html"
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Igor",
+  "Name": "Discord",
+  "Icon": "static/discord.png",
+  "CodePath": "plugin/app.exe",
+  "Description": "Discord voice controls: mute, deafen, camera and hang up",
+  "Category": "Discord",
+  "CategoryIcon": "static/discord.png",
+  "Version": "1.0.0",
+  "URL": "",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "7"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.9"
+  }
+}

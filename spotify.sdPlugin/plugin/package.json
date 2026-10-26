@@ -1,0 +1,19 @@
+{
+  "name": "nodeplugin",
+  "version": "1.0.0",
+  "author": "Igor",
+  "main": "index.js",
+  "description": "Spotify controls for StreamDock",
+  "scripts": {
+    "build": "ncc build index.js -m -o ./build && node autofile.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jimp": "^0.21.3",
+    "log4js": "^6.9.1",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "fs-extra": "^8.1.0"
+  }
+}
