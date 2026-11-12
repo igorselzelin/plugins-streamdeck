@@ -14,7 +14,7 @@ Cada serviço é um único plugin com várias actions, então aparece como uma s
 
 | Plugin | Actions |
 |---|---|
-| [`spotify.sdPlugin`](spotify.sdPlugin/README.md) | **Now Playing** (capa do álbum com animação de play/pause e transição entre faixas), **Volume / Mute** (knob), **Seek ±5s** (knob), **Shuffle** (ícone verde quando ativo) e **Queue** (atalho Alt+Shift+Q) |
+| [`spotify.sdPlugin`](spotify.sdPlugin/README.md) | **Now Playing** (capa do álbum com animações de toque a 30 fps, dissolve entre faixas e atualização em ~1 s), **Volume / Mute** (knob), **Seek ±5s** (knob), **Shuffle** (ícone verde quando ativo) e **Queue** (atalho Alt+Shift+Q) |
 | [`discord.sdPlugin`](discord.sdPlugin/README.md) | **Mute**, **Deafen**, **Camera** e **Hang Up** — traz o Discord para a frente, envia o atalho e devolve o foco à janela anterior |
 | [`claude-usage.sdPlugin`](claude-usage.sdPlugin/README.md) | **Claude Session (5h)** e **Claude Weekly**: anel de progresso do uso real do plano Pro/Max, atualizado em tempo real; clique alterna entre % usado e tempo até o reset |
 | [`clawd.sdPlugin`](clawd.sdPlugin/manifest.json) | Clawd, o mascote pixelado do Claude Code: anda entre os botões onde for colocado e reage ao estado do Claude Code (ocioso, trabalhando etc.); clique para cumprimentá-lo |
@@ -52,7 +52,7 @@ Cada pasta `*.sdPlugin` é um plugin autocontido: `manifest.json` declara suas a
 - **Várias actions por plugin.** `spotify` e `discord` hospedam todas as suas actions no mesmo processo. Cada recurso fica em `plugin/features/` (Spotify) ou numa tabela em `plugin/index.js` (Discord) e se registra com `plugin.registerAction(uuid, new Actions({...}))`.
 - **Despacho por UUID completo.** O código base do SDK roteava eventos pelo último trecho do UUID (`...action1`). Como vários UUIDs terminam em `action1`, o `plugin/utils/plugin.js` desses plugins consulta primeiro o UUID completo. Os UUIDs antigos foram mantidos, então botões já posicionados continuam funcionando.
 - **Autenticação compartilhada (Spotify).** `plugin/spotifyApi.js` guarda as funções HTTP e um único token de acesso, renovado uma vez para todas as actions.
-- **Animações rápidas (SYNK).** Cada quadro é desenhado direto em buffers RGBA e codificado com `jpeg-js` (`plugin/raster.js`), chegando a 30 fps nas teclas de 126×126.
+- **Animações rápidas (Spotify e SYNK).** Cada quadro é desenhado direto em buffers RGBA e codificado com `jpeg-js` (`plugin/raster.js` de cada plugin), chegando a 30 fps nas teclas de 126×126.
 - **Uma conexão só (SYNK).** `synk/transport.js` fala o protocolo, `synk/supervisor.js` mantém uma única conexão com reconexão controlada e `synk/api.js` mapeia as teclas para comandos. Imagens personalizadas são lidas (somente leitura) dos perfis do Rise Mode, para que as animações sejam desenhadas por cima delas.
 
 #### Adicionar uma action
@@ -103,7 +103,7 @@ Each service is a single plugin with several actions, so it shows up as one cate
 
 | Plugin | Actions |
 |---|---|
-| [`spotify.sdPlugin`](spotify.sdPlugin/README.md) | **Now Playing** (album art with play/pause animation and a transition between tracks), **Volume / Mute** (knob), **Seek ±5s** (knob), **Shuffle** (green icon when on) and **Queue** (Alt+Shift+Q hotkey) |
+| [`spotify.sdPlugin`](spotify.sdPlugin/README.md) | **Now Playing** (album art with 30 fps touch animations, a dissolve between tracks and ~1 s updates), **Volume / Mute** (knob), **Seek ±5s** (knob), **Shuffle** (green icon when on) and **Queue** (Alt+Shift+Q hotkey) |
 | [`discord.sdPlugin`](discord.sdPlugin/README.md) | **Mute**, **Deafen**, **Camera** and **Hang Up** — brings Discord to the front, sends the hotkey, and returns focus to the previous window |
 | [`claude-usage.sdPlugin`](claude-usage.sdPlugin/README.md) | **Claude Session (5h)** and **Claude Weekly**: progress ring for real Pro/Max plan usage, updated in real time; click toggles between % used and time until reset |
 | [`clawd.sdPlugin`](clawd.sdPlugin/manifest.json) | Clawd, the pixel-art Claude Code mascot: walks across whichever buttons he is placed on and reacts to Claude Code's state (idle, working, etc.); click to say hi |
@@ -141,7 +141,7 @@ Each `*.sdPlugin` folder is a self-contained plugin: `manifest.json` declares it
 - **Several actions per plugin.** `spotify` and `discord` host all their actions in the same process. Each feature lives in `plugin/features/` (Spotify) or in a table in `plugin/index.js` (Discord) and registers itself with `plugin.registerAction(uuid, new Actions({...}))`.
 - **Dispatch by full UUID.** The SDK's base code routed events by the last segment of the UUID (`...action1`). Since several UUIDs end in `action1`, these plugins' `plugin/utils/plugin.js` look up the full UUID first. The old UUIDs were kept, so buttons already placed keep working.
 - **Shared authentication (Spotify).** `plugin/spotifyApi.js` holds the HTTP helpers and a single access token, refreshed once for all actions.
-- **Fast animations (SYNK).** Every frame is drawn straight on RGBA buffers and encoded with `jpeg-js` (`plugin/raster.js`), reaching 30 fps on the 126×126 keys.
+- **Fast animations (Spotify and SYNK).** Every frame is drawn straight on RGBA buffers and encoded with `jpeg-js` (each plugin's `plugin/raster.js`), reaching 30 fps on the 126×126 keys.
 - **A single connection (SYNK).** `synk/transport.js` speaks the protocol, `synk/supervisor.js` keeps one connection with controlled reconnection, and `synk/api.js` maps keys to commands. Custom key images are read (read-only) from the Rise Mode profiles, so animations are drawn on top of them.
 
 #### Adding an action
