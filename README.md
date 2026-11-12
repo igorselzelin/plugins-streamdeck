@@ -6,7 +6,7 @@
 
 ## Português
 
-Plugins para o **Rise Mode Vision 01 Sound**, um dispositivo compatível com o SDK do **HotSpot StreamDock** (clone da arquitetura Elgato Stream Deck). Transformam o dispositivo num painel de controle de **Spotify**, **Discord** e **Claude Code**: capa do álbum, volume, seek, shuffle, mute/deafen/câmera, cotas de uso do plano Claude e um mascote animado.
+Plugins para o **Rise Mode Vision 01 Sound**, um dispositivo compatível com o SDK do **HotSpot StreamDock** (clone da arquitetura Elgato Stream Deck). Transformam o dispositivo num painel de controle de **Spotify**, **Discord**, **Claude Code** e do soundboard **SYNK**: capa do álbum, volume, seek, shuffle, mute/deafen/câmera, cotas de uso do plano Claude, um mascote animado e teclas que tocam e param sons do SYNK.
 
 ### Plugins
 
@@ -18,6 +18,7 @@ Cada serviço é um único plugin com várias actions, então aparece como uma s
 | [`discord.sdPlugin`](discord.sdPlugin/README.md) | **Mute**, **Deafen**, **Camera** e **Hang Up** — traz o Discord para a frente, envia o atalho e devolve o foco à janela anterior |
 | [`claude-usage.sdPlugin`](claude-usage.sdPlugin/README.md) | **Claude Session (5h)** e **Claude Weekly**: anel de progresso do uso real do plano Pro/Max, atualizado em tempo real; clique alterna entre % usado e tempo até o reset |
 | [`clawd.sdPlugin`](clawd.sdPlugin/manifest.json) | Clawd, o mascote pixelado do Claude Code: anda entre os botões onde for colocado e reage ao estado do Claude Code (ocioso, trabalhando etc.); clique para cumprimentá-lo |
+| [`synk.sdPlugin`](synk.sdPlugin/README.md) | **Play Sound**, **Play / Stop Sound**, **Stop Sound**, **Stop All**, **Mute Effects**, **Effects Volume** (knob, 0–200 %) e **SYNK Status** — o som é escolhido numa lista vinda do SYNK; borda verde e barra de progresso enquanto toca, animação de toque, respeita a imagem e o título que você define no Rise Mode |
 
 ### De onde vêm os dados
 
@@ -27,6 +28,7 @@ Cada serviço é um único plugin com várias actions, então aparece como uma s
 | Discord | Atalhos de teclado simulados | Os atalhos precisam estar configurados no Discord. Se o app estiver só na bandeja, nada acontece |
 | Claude Usage | Endpoint OAuth de uso do próprio Claude Code (`/api/oauth/usage`), com fallback para `claude -p "/usage"` | Atualização em tempo real: observa `~/.claude/projects` e rebusca ~1,5 s após qualquer atividade, mais um poll de segurança de 30 s |
 | Clawd | Estado local do Claude Code | Sem API externa |
+| SYNK | Engine local do SYNK, por **named pipe** do Windows (sem rede, sem porta TCP) | Descobre o SYNK por `%LOCALAPPDATA%\SYNK\ipc.json` e autentica com HMAC-SHA256 (o token nunca trafega). Reconecta sozinho quando o SYNK abre/fecha. Teclas guardam só o ID do som, nunca caminho de arquivo |
 
 ### Migração do AutoHotkey
 
@@ -50,6 +52,8 @@ Cada pasta `*.sdPlugin` é um plugin autocontido: `manifest.json` declara suas a
 - **Várias actions por plugin.** `spotify` e `discord` hospedam todas as suas actions no mesmo processo. Cada recurso fica em `plugin/features/` (Spotify) ou numa tabela em `plugin/index.js` (Discord) e se registra com `plugin.registerAction(uuid, new Actions({...}))`.
 - **Despacho por UUID completo.** O código base do SDK roteava eventos pelo último trecho do UUID (`...action1`). Como vários UUIDs terminam em `action1`, o `plugin/utils/plugin.js` desses plugins consulta primeiro o UUID completo. Os UUIDs antigos foram mantidos, então botões já posicionados continuam funcionando.
 - **Autenticação compartilhada (Spotify).** `plugin/spotifyApi.js` guarda as funções HTTP e um único token de acesso, renovado uma vez para todas as actions.
+- **Animações rápidas (SYNK).** Cada quadro é desenhado direto em buffers RGBA e codificado com `jpeg-js` (`plugin/raster.js`), chegando a 30 fps nas teclas de 126×126.
+- **Uma conexão só (SYNK).** `synk/transport.js` fala o protocolo, `synk/supervisor.js` mantém uma única conexão com reconexão controlada e `synk/api.js` mapeia as teclas para comandos. Imagens personalizadas são lidas (somente leitura) dos perfis do Rise Mode, para que as animações sejam desenhadas por cima delas.
 
 #### Adicionar uma action
 
@@ -70,13 +74,16 @@ npm run build
 
 Feche o Rise Mode Controller / StreamDock completamente antes do build, senão o deploy falha com `EBUSY` e o plugin aparece com ícone de interrogação. Requisitos, credenciais e detalhes ficam no README de cada plugin.
 
+O `synk.sdPlugin` tem testes automatizados (`npm test`, e `npm run test:app` para rodar no mesmo runtime Node 18.5 que o Rise Mode usa).
+
 ### Problemas comuns
 
 | Sintoma | Causa provável |
 |---|---|
 | Plugin com ícone de interrogação | Build feito com o app aberto (`EBUSY`). Feche o app, rode o build de novo e reabra |
-| Botão vazio depois de atualizar | Arraste a action de novo da lista (categoria **Spotify** ou **Discord**) |
+| Botão vazio depois de atualizar | Arraste a action de novo da lista (categoria **Spotify**, **Discord** ou **SYNK**) |
 | Botão de atalho não faz nada | O app (Discord/Spotify) está só na bandeja, sem janela visível, ou o atalho não está configurado nele |
+| Teclas do SYNK mostram OFFLINE | O SYNK está fechado (elas voltam sozinhas quando ele abre) ou é uma versão antiga do SYNK, sem `ipc.json` |
 | Volume ou seek não respondem ao knob | O formato do evento `dialRotate` não é documentado; veja o payload bruto em `plugin/log/*.log` e ajuste `rotationSign()` |
 | Qualquer erro | Log em `plugin/log/*.log`, dentro da pasta instalada do plugin |
 
@@ -88,7 +95,7 @@ Distribuído sob a licença [MIT](LICENSE).
 
 ## English
 
-Plugins for the **Rise Mode Vision 01 Sound**, a device compatible with the **HotSpot StreamDock** SDK (a clone of the Elgato Stream Deck architecture). They turn the device into a control panel for **Spotify**, **Discord**, and **Claude Code**: album art, volume, seek, shuffle, mute/deafen/camera, Claude plan usage quotas, and an animated mascot.
+Plugins for the **Rise Mode Vision 01 Sound**, a device compatible with the **HotSpot StreamDock** SDK (a clone of the Elgato Stream Deck architecture). They turn the device into a control panel for **Spotify**, **Discord**, **Claude Code**, and the **SYNK** soundboard: album art, volume, seek, shuffle, mute/deafen/camera, Claude plan usage quotas, an animated mascot, and keys that play and stop SYNK sounds.
 
 ### Plugins
 
@@ -100,6 +107,7 @@ Each service is a single plugin with several actions, so it shows up as one cate
 | [`discord.sdPlugin`](discord.sdPlugin/README.md) | **Mute**, **Deafen**, **Camera** and **Hang Up** — brings Discord to the front, sends the hotkey, and returns focus to the previous window |
 | [`claude-usage.sdPlugin`](claude-usage.sdPlugin/README.md) | **Claude Session (5h)** and **Claude Weekly**: progress ring for real Pro/Max plan usage, updated in real time; click toggles between % used and time until reset |
 | [`clawd.sdPlugin`](clawd.sdPlugin/manifest.json) | Clawd, the pixel-art Claude Code mascot: walks across whichever buttons he is placed on and reacts to Claude Code's state (idle, working, etc.); click to say hi |
+| [`synk.sdPlugin`](synk.sdPlugin/README.md) | **Play Sound**, **Play / Stop Sound**, **Stop Sound**, **Stop All**, **Mute Effects**, **Effects Volume** (knob, 0–200 %) and **SYNK Status** — sounds are picked from a list that comes from SYNK; green border and progress bar while playing, touch animations, and it keeps the image and title you set in Rise Mode |
 
 ### Where the data comes from
 
@@ -109,6 +117,7 @@ Each service is a single plugin with several actions, so it shows up as one cate
 | Discord | Simulated keyboard hotkeys | The hotkeys must be configured in Discord. If the app is only in the tray, nothing happens |
 | Claude Usage | Claude Code's own OAuth usage endpoint (`/api/oauth/usage`), falling back to `claude -p "/usage"` | Real-time: watches `~/.claude/projects` and re-fetches ~1.5 s after any activity, plus a 30 s safety-net poll |
 | Clawd | Local Claude Code state | No external API |
+| SYNK | The local SYNK engine, over a Windows **named pipe** (no network, no TCP port) | Finds SYNK through `%LOCALAPPDATA%\SYNK\ipc.json` and authenticates with HMAC-SHA256 (the token never crosses the pipe). Reconnects by itself when SYNK opens/closes. Keys store only the sound ID, never a file path |
 
 ### AutoHotkey migration
 
@@ -132,6 +141,8 @@ Each `*.sdPlugin` folder is a self-contained plugin: `manifest.json` declares it
 - **Several actions per plugin.** `spotify` and `discord` host all their actions in the same process. Each feature lives in `plugin/features/` (Spotify) or in a table in `plugin/index.js` (Discord) and registers itself with `plugin.registerAction(uuid, new Actions({...}))`.
 - **Dispatch by full UUID.** The SDK's base code routed events by the last segment of the UUID (`...action1`). Since several UUIDs end in `action1`, these plugins' `plugin/utils/plugin.js` look up the full UUID first. The old UUIDs were kept, so buttons already placed keep working.
 - **Shared authentication (Spotify).** `plugin/spotifyApi.js` holds the HTTP helpers and a single access token, refreshed once for all actions.
+- **Fast animations (SYNK).** Every frame is drawn straight on RGBA buffers and encoded with `jpeg-js` (`plugin/raster.js`), reaching 30 fps on the 126×126 keys.
+- **A single connection (SYNK).** `synk/transport.js` speaks the protocol, `synk/supervisor.js` keeps one connection with controlled reconnection, and `synk/api.js` maps keys to commands. Custom key images are read (read-only) from the Rise Mode profiles, so animations are drawn on top of them.
 
 #### Adding an action
 
@@ -152,13 +163,16 @@ npm run build
 
 Fully close Rise Mode Controller / StreamDock before building, otherwise the deploy step fails with `EBUSY` and the plugin shows a question-mark icon. Requirements, credentials, and details are in each plugin's own README.
 
+`synk.sdPlugin` has automated tests (`npm test`, and `npm run test:app` to run on the same Node 18.5 runtime Rise Mode uses).
+
 ### Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|
 | Plugin shows a question-mark icon | Built while the app was open (`EBUSY`). Close the app, rebuild, and reopen |
-| Empty button after an update | Drag the action again from the list (**Spotify** or **Discord** category) |
+| Empty button after an update | Drag the action again from the list (**Spotify**, **Discord** or **SYNK** category) |
 | A hotkey button does nothing | The app (Discord/Spotify) is only in the tray with no visible window, or the hotkey isn't configured in it |
+| SYNK keys show OFFLINE | SYNK is closed (they come back by themselves when it opens), or it is an old SYNK build without `ipc.json` |
 | Volume or seek ignore the knob | The `dialRotate` event format isn't documented; check the raw payload in `plugin/log/*.log` and adjust `rotationSign()` |
 | Any other error | Log in `plugin/log/*.log`, inside the plugin's installed folder |
 
