@@ -22,6 +22,9 @@ async function ensureLocalVolume() {
     if (!volumeSeedPromise) {
         volumeSeedPromise = getPlayerState(log).then(data => {
             localVolume = data?.device?.volume_percent ?? 50;
+        }).catch(err => {
+            volumeSeedPromise = null; // let the next tick retry instead of failing forever
+            throw err;
         });
     }
     await volumeSeedPromise;

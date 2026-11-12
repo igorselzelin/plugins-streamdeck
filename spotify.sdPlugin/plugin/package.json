@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "jimp": "^0.21.3",
+    "jpeg-js": "^0.4.4",
     "log4js": "^6.9.1",
     "ws": "^8.14.2"
   },
