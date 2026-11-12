@@ -1,0 +1,26 @@
+{
+  "name": "nodeplugin",
+  "version": "0.3.0",
+  "author": "Igor",
+  "main": "index.js",
+  "description": "SYNK soundboard controls for StreamDock",
+  "scripts": {
+    "bundle": "ncc build index.js -m -o ./build",
+    "build": "npm run bundle && node autofile.js",
+    "test": "node --test test/transport.test.js test/supervisor.test.js test/api.test.js test/validate-state-render.test.js test/hostImages.test.js test/keyview.test.js test/actions.e2e.test.js",
+    "test:app": "npm run bundle && node tools/testOnAppExe.js",
+    "test:engine": "node --test test/engine.integration.test.js",
+    "icons": "node tools/makeIcons.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jimp": "^0.21.3",
+    "jpeg-js": "^0.4.4",
+    "log4js": "^6.9.1",
+    "parse-bmfont-xml": "^1.1.4",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "fs-extra": "^8.1.0"
+  }
+}

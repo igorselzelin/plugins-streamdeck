@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>SYNK Sound - Property Inspector</title>
+    <link rel="stylesheet" href="../../static/css/sdpi.css">
+    <style>
+        #status { padding: 4px 8px; margin: 6px 0; border-radius: 3px; font-size: 11px; }
+        #status.ok { background: #1e4d2b; color: #b8f5c8; }
+        #status.warn { background: #5c4100; color: #ffe1a1; }
+        #status.err { background: #5c1a14; color: #ffc4bd; }
+        #list { width: 100%; height: 180px; }
+        #current { font-size: 11px; color: #aaa; word-break: break-word; }
+    </style>
+</head>
+
+<body>
+    <div class="sdpi-wrapper" style="display: none">
+        <div id="status" class="warn">Conectando ao SYNK...</div>
+
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Buscar</div>
+            <input class="sdpi-item-value" id="search" type="text" maxlength="100" placeholder="Nome do som">
+        </div>
+
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Som</div>
+            <select class="sdpi-item-value" id="list" size="8"></select>
+        </div>
+
+        <div class="sdpi-item" id="modeRow" style="display: none">
+            <div class="sdpi-item-label">Ao repetir</div>
+            <select class="sdpi-item-value" id="mode">
+                <option value="overlap">Sobrepor (toca outra vez)</option>
+                <option value="restart">Reiniciar do começo</option>
+            </select>
+        </div>
+
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Selecionado</div>
+            <div class="sdpi-item-value" id="current">nenhum</div>
+        </div>
+
+        <div class="sdpi-item">
+            <div class="sdpi-item-label"></div>
+            <button class="sdpi-item-value" id="reload">Atualizar lista</button>
+        </div>
+    </div>
+    <script src="../utils/common.js"></script>
+    <script src="../utils/action.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>

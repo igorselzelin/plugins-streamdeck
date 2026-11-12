@@ -1,0 +1,148 @@
+{
+  "Actions": [
+    {
+      "Icon": "static/play.png",
+      "Name": "Play Sound",
+      "States": [
+        {
+          "Image": "static/play.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Plays a SYNK sound (pick it in the settings panel)",
+      "UUID": "com.hotspot.streamdock.synk.play",
+      "PropertyInspectorPath": "propertyInspector/sound/index.html"
+    },
+    {
+      "Icon": "static/toggle.png",
+      "Name": "Play / Stop Sound",
+      "States": [
+        {
+          "Image": "static/toggle.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Plays a SYNK sound, or stops it if it is already playing",
+      "UUID": "com.hotspot.streamdock.synk.toggle",
+      "PropertyInspectorPath": "propertyInspector/sound/index.html"
+    },
+    {
+      "Icon": "static/stop.png",
+      "Name": "Stop Sound",
+      "States": [
+        {
+          "Image": "static/stop.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Stops one SYNK sound",
+      "UUID": "com.hotspot.streamdock.synk.stop",
+      "PropertyInspectorPath": "propertyInspector/sound/index.html"
+    },
+    {
+      "Icon": "static/stopall.png",
+      "Name": "Stop All",
+      "States": [
+        {
+          "Image": "static/stopall.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Stops every sound playing in SYNK",
+      "UUID": "com.hotspot.streamdock.synk.stopall",
+      "PropertyInspectorPath": "propertyInspector/info/index.html"
+    },
+    {
+      "Icon": "static/mute.png",
+      "Name": "Mute Effects",
+      "States": [
+        {
+          "Image": "static/mute.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "Tooltip": "Mutes or unmutes SYNK sound effects",
+      "UUID": "com.hotspot.streamdock.synk.mute",
+      "PropertyInspectorPath": "propertyInspector/info/index.html"
+    },
+    {
+      "Icon": "static/volume.png",
+      "Name": "Effects Volume",
+      "States": [
+        {
+          "Image": "static/volume.png"
+        }
+      ],
+      "Controllers": [
+        "Knob"
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false,
+      "Tooltip": "Rotate to change SYNK effects volume, press to mute",
+      "UUID": "com.hotspot.streamdock.synk.volume",
+      "PropertyInspectorPath": "propertyInspector/volume/index.html"
+    },
+    {
+      "Icon": "static/status.png",
+      "Name": "SYNK Status",
+      "States": [
+        {
+          "Image": "static/status.png"
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Information"
+      ],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "Tooltip": "Shows whether SYNK is connected; press to reconnect now",
+      "UUID": "com.hotspot.streamdock.synk.status",
+      "PropertyInspectorPath": "propertyInspector/info/index.html"
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Igor",
+  "Name": "SYNK",
+  "Icon": "static/synk.png",
+  "CodePath": "plugin/app.exe",
+  "Description": "SYNK soundboard: play and stop sounds, stop all, mute and volume for effects",
+  "Category": "SYNK",
+  "CategoryIcon": "static/synk.png",
+  "Version": "0.3.0",
+  "URL": "",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "7"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.9"
+  }
+}
